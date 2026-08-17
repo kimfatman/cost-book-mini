@@ -291,7 +291,7 @@
 
   function bindObStep() {
     /* 行业选择 */
-    var cards = App.$all ? App.$all('.ob-card') : [];
+    var cards = $all('.ob-card');
     cards.forEach(function (c) {
       App.on(c, 'click', function () {
         obState.industry = c.getAttribute('data-ind');
