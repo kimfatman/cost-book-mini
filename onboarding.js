@@ -10,6 +10,11 @@
   var OB_KEY = 'sqd-ob';
   var SCALES = ['档口', '单店', '多店'];
 
+  /* 模块内选择器（App 未导出 $all，勿用 App.$all） */
+  function $all(sel, root) {
+    return Array.prototype.slice.call((root || document).querySelectorAll(sel));
+  }
+
   /* ---------- 持久化 ---------- */
   function read() {
     try {
