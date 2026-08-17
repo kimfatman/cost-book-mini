@@ -223,7 +223,7 @@
 
   function buildStep1() {
     var h = '<div class="ob-grid">';
-    var keys = ['canteen', 'retail', 'fresh', 'beauty', 'factory', 'service'];
+    var keys = ['canteen', 'retail', 'fresh', 'beauty', 'factory', 'stall', 'service'];
     keys.forEach(function (k) {
       var t = DB.industryTemplates[k];
       if (!t) return;

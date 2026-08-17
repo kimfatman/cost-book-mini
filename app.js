@@ -15,6 +15,9 @@
 
   function $(sel, root) { return (root || document).querySelector(sel); }
   function $all(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
 
   /* ---------- 通用事件托管（demount 自动清理） ---------- */
   function on(el, ev, fn) {
@@ -554,7 +557,46 @@
       renderAnaTrend(d.trend);
       renderAnaTop(d.top);
       renderAnaSup(d.suppliers);
+      renderHiddenCost();
     });
+  }
+
+  /* 隐性成本估算模块（引擎：hidden-cost.js，设计：docs/08-hidden-cost-engine.md） */
+  function renderHiddenCost() {
+    var box = $('#anaHidden');
+    if (!box || !window.HiddenCost) return;
+    var r = HiddenCost.estimate();
+    var lvColor = r.level === '优' ? 'var(--c-brand)' : (r.level === '良' ? 'var(--c-brand)' : (r.level === '注意' ? 'var(--c-amber)' : 'var(--c-danger)'));
+
+    var h = '<div class="sec-title"><span>隐性成本估算</span><span style="font-size:11px;color:var(--c-ink-3);font-weight:400;">' + esc(r.industryName) + '专属模型</span></div>';
+    h += '<div class="c-card c-card--flat" style="padding:14px 16px;">';
+
+    /* 汇总条 */
+    h += '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">' +
+      '<div style="flex:1;"><div style="font-size:12px;color:var(--c-ink-2);">本月隐性成本估算</div>' +
+      '<div class="t-num" style="font-size:22px;font-weight:800;margin-top:2px;color:' + lvColor + ';">¥' + money0(r.total) + '</div>' +
+      '<div style="font-size:11px;color:var(--c-ink-3);margin-top:3px;">约占营收 ' + r.ratio.toFixed(1) + '% · 健康度 ' + r.health + '</div></div>' +
+      '<div style="text-align:center;flex:none;"><div style="width:54px;height:54px;border-radius:50%;border:3px solid ' + lvColor + ';display:flex;align-items:center;justify-content:center;flex-direction:column;color:' + lvColor + ';"><span class="t-num" style="font-size:18px;font-weight:800;line-height:1;">' + r.health + '</span><span style="font-size:10px;">' + r.level + '</span></div>' +
+      '<div style="font-size:10px;color:var(--c-ink-3);margin-top:4px;">健康度</div></div></div>';
+
+    /* 成本项明细 */
+    r.items.forEach(function (it) {
+      var bar = Math.min(it.health, 100);
+      var barColor = it.health >= 70 ? 'var(--c-brand)' : (it.health >= 55 ? 'var(--c-amber)' : 'var(--c-danger)');
+      h += '<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-top:1px solid var(--c-line);">' +
+        '<span style="width:32px;height:32px;border-radius:10px;background:var(--c-brand-soft);color:var(--c-brand);display:flex;align-items:center;justify-content:center;flex:none;">' + ic(it.icon, 16) + '</span>' +
+        '<div style="flex:1;min-width:0;">' +
+        '<div style="display:flex;align-items:baseline;gap:6px;"><span style="font-size:13px;font-weight:700;">' + esc(it.name) + '</span>' +
+        '<span class="t-num" style="font-size:13px;font-weight:800;margin-left:auto;color:' + barColor + ';">¥' + money0(it.estimate) + '</span></div>' +
+        '<div style="font-size:10.5px;color:var(--c-ink-3);margin-top:3px;">' + esc(it.formula) + ' · 基准 ' + esc(it.benchmark) + '</div>' +
+        '<div style="height:4px;border-radius:2px;background:var(--c-card-2);margin-top:6px;overflow:hidden;"><div style="width:' + bar + '%;height:100%;background:' + barColor + ';border-radius:2px;transition:width .8s var(--ease);"></div></div>' +
+        '<div style="font-size:11px;color:var(--c-ink-2);line-height:1.6;margin-top:6px;">' + esc(it.tip) + '</div></div></div>';
+    });
+
+    h += '<div style="font-size:10.5px;color:var(--c-ink-3);padding-top:8px;border-top:1px solid var(--c-line);">基于经营数据与行业基准参数估算，实际值请以盘点与对账为准 · 模型见 docs/08</div>';
+    h += '</div>';
+    box.innerHTML = h;
+    scheduleInject(box);
   }
 
   function renderShare(per, share) {

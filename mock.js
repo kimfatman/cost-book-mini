@@ -213,7 +213,13 @@ window.DB = {
         { id: 't5', name: '物流仓储', color: '#C24A38' },
         { id: 't6', name: '设备折旧', color: '#5B7C6B' },
         { id: 't7', name: '其他', color: '#9B978D' }
-      ]
+      ],
+      // 隐性成本基准（docs/08-hidden-cost-engine.md）
+      hiddenCost: {
+        foodLoss: { low: 5, high: 8, mid: 5 },   // 食材损耗率 %
+        utility: { rate: 0.10 },                  // 水电隐性浪费 10%
+        expiry: { rate: 0.03 }                    // 库存过期 3%
+      }
     },
     retail: {
       id: 'retail', name: '零售', desc: '超市 / 便利店 / 服装店', icon: 'store',
@@ -225,7 +231,12 @@ window.DB = {
         { id: 't5', name: '物流配送', color: '#5B7C6B' },
         { id: 't6', name: '损耗报损', color: '#C24A38' },
         { id: 't7', name: '其他', color: '#9B978D' }
-      ]
+      ],
+      hiddenCost: {
+        shrinkage: { low: 1, high: 3, mid: 1.6 }, // 门店损耗率 %（NRF 均值 1.4-1.6%）
+        carrying: { rate: 0.25 },                  // 库存年化持有成本
+        obsolete: { rate: 0.25 }                   // 滞销过时率
+      }
     },
     fresh: {
       id: 'fresh', name: '生鲜果蔬', desc: '菜场 / 水果店 / 水产', icon: 'shopping-basket',
@@ -237,7 +248,12 @@ window.DB = {
         { id: 't5', name: '人力工资', color: '#8A5FA8' },
         { id: 't6', name: '物流运费', color: '#5B7C6B' },
         { id: 't7', name: '其他', color: '#9B978D' }
-      ]
+      ],
+      hiddenCost: {
+        loss: { low: 2, high: 5, mid: 3.5 }, // 综合损耗率 %（叶菜/水产 ≤5%）
+        coldchain: { rate: 0.10 },           // 冷链电费占比
+        shr2: { rate: 3 }                    // 鲜度折价 3%
+      }
     },
     beauty: {
       id: 'beauty', name: '美容美发', desc: '理发 / 美甲 / 护肤', icon: 'scissors',
@@ -249,7 +265,12 @@ window.DB = {
         { id: 't5', name: '设备折旧', color: '#5B7C6B' },
         { id: 't6', name: '耗品杂项', color: '#C24A38' },
         { id: 't7', name: '其他', color: '#9B978D' }
-      ]
+      ],
+      hiddenCost: {
+        idle: { low: 21, high: 53, mid: 40 },  // 工位空置率 %（利用率中位 47%）
+        noshow: { rate: 0.10 },                // 爽约率 10%
+        chair: { vacancy: 0.2, share: 0.14 }   // 空置率 20% × 工位租金占比 14%
+      }
     },
     factory: {
       id: 'factory', name: '小型制造', desc: '加工 / 作坊 / 工厂', icon: 'factory',
@@ -261,7 +282,12 @@ window.DB = {
         { id: 't5', name: '物流运输', color: '#C24A38' },
         { id: 't6', name: '营销推广', color: '#8A5FA8' },
         { id: 't7', name: '其他', color: '#9B978D' }
-      ]
+      ],
+      hiddenCost: {
+        scrap: { low: 2, high: 5, mid: 3 },   // 废品率 %
+        downtime: { rate: 0.07 },             // 停机损失占成本 7%
+        rework: { rate: 0.05 }                // 返工工时占比 5%
+      }
     },
     service: {
       id: 'service', name: '其他服务', desc: '培训 / 维修 / 家政', icon: 'sparkles',
@@ -272,7 +298,29 @@ window.DB = {
         { id: 't4', name: '办公耗材', color: '#0D7261' },
         { id: 't5', name: '差旅费用', color: '#5B7C6B' },
         { id: 't6', name: '其他', color: '#9B978D' }
-      ]
+      ],
+      hiddenCost: {
+        idle: { low: 20, high: 45, mid: 30 }, // 工时闲置率 %
+        noshow: { rate: 0.12 },               // 爽约率 12%
+        material: { rate: 0.08 }              // 耗材浪费率 8%
+      }
+    },
+    // 商贸 · 摆摊商贩：为地摊/夜市/集市商贩优化的极简模型
+    stall: {
+      id: 'stall', name: '商贸摆摊', desc: '地摊 / 夜市 / 集市商贩', icon: 'shopping-cart',
+      categories: [
+        { id: 't1', name: '进货成本', color: '#0D7261' },
+        { id: 't2', name: '摊位费', color: '#B97A12' },
+        { id: 't3', name: '交通搬运', color: '#3E6FA8' },
+        { id: 't4', name: '损耗折价', color: '#C24A38' },
+        { id: 't5', name: '其他杂费', color: '#9B978D' }
+      ],
+      hiddenCost: {
+        loss: { low: 5, high: 10, mid: 7 },    // 货品损耗率 %（无冷链环境更高）
+        stallFee: { low: 5, high: 15, mid: 10 }, // 摊位费占营收 %
+        weather: { rate: 0.15 },               // 出摊空档率 %（雨天/缺勤）
+        clearance: { rate: 0.03 }              // 尾货折价损失 3%
+      }
     }
   }
 };
