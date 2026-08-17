@@ -729,6 +729,7 @@
       '<div class="c-switch is-on" id="swCredit"></div></div></div></div>';
 
     h += group('其他', [
+      { ic: 'store', label: '切换行业', color: 'var(--c-brand)', bg: 'var(--c-brand-soft)', act: 'switchInd', right: DB.store.type.split(' · ')[0] },
       { ic: 'help-circle', label: '帮助与反馈', color: 'var(--c-ink-2)', bg: 'var(--c-card-2)', act: 'help' },
       { ic: 'users', label: '邀请店员协作', color: 'var(--c-ink-2)', bg: 'var(--c-card-2)', act: 'invite' },
       { ic: 'badge-check', label: '关于算得清', color: 'var(--c-ink-2)', bg: 'var(--c-card-2)', right: 'v2.4.1', act: 'about' }
@@ -753,6 +754,16 @@
           toast('帮助中心即将上线');
         } else if (act === 'invite') {
           toast('已生成邀请链接（演示）');
+        } else if (act === 'switchInd') {
+          confirm({
+            title: '切换行业',
+            desc: '切换后成本分类将按新行业模板重置，分析页的隐性成本估算也会切换到该行业模型（演示经营数据保持不变）。',
+            okText: '去切换',
+            onOk: function () {
+              if (window.Onboarding) Onboarding.clear();
+              go('onboarding');
+            }
+          });
         }
       });
     });
