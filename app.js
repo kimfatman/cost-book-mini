@@ -161,16 +161,18 @@
 
   function confirm(opts) {
     opts = opts || {};
+    var ok = dom.dialog.querySelector('.js-dialog-ok');
+    var cancel = dom.dialog.querySelector('.js-dialog-cancel');
     dom.dialog.querySelector('.c-dialog__title').textContent = opts.title || '确认操作';
     dom.dialog.querySelector('.c-dialog__desc').textContent = opts.desc || '';
-    dom.dialog.querySelector('.js-dialog-ok').className = 'c-btn c-btn--primary' + (opts.danger ? ' js-danger' : '');
+    ok.textContent = opts.okText || '确定';
+    ok.className = 'c-btn c-btn--primary js-dialog-ok' + (opts.danger ? ' js-danger' : '');
+    cancel.style.display = '';
     var handler = function () { hideDialog(); opts.onOk && opts.onOk(); };
-    var ok = dom.dialog.querySelector('.js-dialog-ok');
     ok.onclick = handler;
-    dom.dialog.querySelector('.js-dialog-cancel').onclick = function () { hideDialog(); };
+    cancel.onclick = function () { hideDialog(); };
     dom.mask.classList.add('is-show');
     dom.dialog.classList.add('is-show');
-    ok.removeAttribute('style');
     ok.style.background = opts.danger ? 'var(--c-danger)' : '';
   }
 
@@ -524,6 +526,8 @@
   function mountAnalysis() { renderAnalysis(); }
 
   function renderAnalysis() {
+    var sec = $('.screen[data-screen="analysis"]');
+    if (!sec) return;
     var h = '<div class="seg-row"><div class="c-seg" id="anaPeriod">' +
       '<button data-p="cur" class="' + (analysisState.period === 'cur' ? 'is-active' : '') + '">本月</button>' +
       '<button data-p="last" class="' + (analysisState.period === 'last' ? 'is-active' : '') + '">上月</button></div></div>';
@@ -531,7 +535,8 @@
     h += '<div id="anaTrendBox">' + skeleton() + '</div>';
     h += '<div id="anaTopBox">' + skeleton('list') + '</div>';
     h += '<div id="anaSupBox">' + skeleton('list') + '</div>';
-    fill('analysis', h);
+    sec.innerHTML = h;
+    scheduleInject(sec);
 
     $all('#anaPeriod button').forEach(function (b) {
       on(b, 'click', function () {
@@ -760,10 +765,15 @@
     dom.dialog = $('#dialog');
     dom.fab = document.querySelector('.c-fab');
 
-    /* 全局点击：data-navto 导航 + 返回 */
+    /* 全局点击委托：data-navto 导航 + data-tab Tab 切换（常驻，不随模块清理） */
     document.addEventListener('click', function (e) {
       var t = e.target;
       while (t && t !== document.body) {
+        if (t.hasAttribute && t.hasAttribute('data-tab')) {
+          e.preventDefault();
+          showTab(t.getAttribute('data-tab'));
+          return;
+        }
         if (t.hasAttribute && t.hasAttribute('data-navto')) {
           var to = t.getAttribute('data-navto');
           var opts = {};
@@ -774,11 +784,9 @@
         t = t.parentNode;
       }
     });
-    on(dom.navBack, 'click', function () { back(); });
-    $all('.tabbar a').forEach(function (a) {
-      on(a, 'click', function (e) { e.preventDefault(); showTab(a.getAttribute('data-tab')); });
-    });
-    on(dom.mask, 'click', function () { hideSheet(); hideDialog(); });
+    /* 常驻壳层事件：直接绑定，避免被模块切换时的事件托管清理 */
+    dom.navBack.addEventListener('click', function () { back(); });
+    dom.mask.addEventListener('click', function () { hideSheet(); hideDialog(); });
 
     /* 注册模块 */
     App.register({ id: 'home', mount: mountHome, demount: function () { } });
