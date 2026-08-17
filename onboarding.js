@@ -150,6 +150,8 @@
       setTimeout(function () {
         btn.disabled = false;
         btn.innerHTML = icTag('check', 16) + '登录 / 注册';
+        /* 登录态：存手机号，引导完成时一并持久化 */
+        obState.phone = phone;
         App.toast('登录成功，开始配置你的行业');
         App.go('onboarding');
       }, 650);
@@ -166,7 +168,7 @@
   /* ============================================================
      行业引导向导
   ============================================================ */
-  var obState = { step: 1, industry: null, storeName: '', scale: '单店', budget: '' };
+  var obState = { step: 1, industry: null, storeName: '', scale: '单店', budget: '', phone: '' };
 
   function mountOnboarding() {
     obState.step = 1;
@@ -174,6 +176,9 @@
     obState.storeName = '';
     obState.scale = '单店';
     obState.budget = '';
+    /* 保留登录时的手机号 */
+    var pre = read();
+    if (pre && pre.phone && !obState.phone) obState.phone = pre.phone;
     renderObStep();
   }
   function demountOnboarding() { /* 无临时状态 */ }
@@ -345,7 +350,8 @@
           industry: obState.industry,
           storeName: obState.storeName,
           scale: obState.scale,
-          budget: Number(obState.budget)
+          budget: Number(obState.budget),
+          phone: obState.phone
         });
         apply(read());
         App.toast('配置完成，开始记账吧');

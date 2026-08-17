@@ -1,4 +1,4 @@
-/* 算得清 · 应用核心
+﻿/* 算得清 · 应用核心
    - 路由（tab 切换 + 子页压栈/弹栈）
    - 全局 UI：toast / confirm / sheet / dialog
    - 模块注册调度：App.register({id, mount, demount, reload})
@@ -538,6 +538,7 @@
     h += '<div id="anaTrendBox">' + skeleton() + '</div>';
     h += '<div id="anaTopBox">' + skeleton('list') + '</div>';
     h += '<div id="anaSupBox">' + skeleton('list') + '</div>';
+    h += '<div id="anaHidden"></div>';
     sec.innerHTML = h;
     scheduleInject(sec);
 
@@ -686,15 +687,20 @@
   ============================================================ */
   function mountMine() {
     var h = '';
+    var ob = window.Onboarding && Onboarding.read ? Onboarding.read() : null;
+    var indId = (ob && ob.industry) || 'canteen';
+    var indIcon = (DB.industryTemplates[indId] && DB.industryTemplates[indId].icon) || 'store';
+    var phone = (ob && ob.phone) || '未绑定';
 
     /* 店铺卡 */
     h += '<div class="c-card c-card--hero" style="padding:20px;">' +
       '<div style="display:flex;align-items:center;gap:14px;">' +
-      '<div style="width:50px;height:50px;border-radius:16px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;">老</div>' +
+      '<div style="width:50px;height:50px;border-radius:16px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;color:#fff;">' + ic(indIcon, 26) + '</div>' +
       '<div style="flex:1;"><div style="font-size:16.5px;font-weight:800;">' + DB.store.name + '</div>' +
-      '<div style="font-size:11.5px;opacity:.82;margin-top:2px;">' + DB.store.type + ' · ' + DB.store.plan + ' · 数据更新 ' + DB.store.updated + '</div></div></div>' +
+      '<div style="font-size:11.5px;opacity:.82;margin-top:2px;">' + DB.store.type + ' · ' + DB.store.plan + '</div>' +
+      '<div style="font-size:11px;opacity:.65;margin-top:2px;">账号 ' + esc(phone) + ' · 数据更新 ' + DB.store.updated + '</div></div></div>' +
       '<div style="display:flex;gap:8px;margin-top:16px;">' +
-      '<button class="c-btn c-btn--sm" style="background:#fff;color:var(--c-brand);flex:1;font-weight:700;">' + ic('settings') + ' 店铺设置</button>' +
+      '<button class="c-btn c-btn--sm" style="background:#fff;color:var(--c-brand);flex:1;font-weight:700;" data-act="storeSettings">' + ic('settings') + ' 店铺设置</button>' +
       '<button class="c-btn c-btn--sm" style="background:rgba(255,255,255,.16);color:#fff;flex:1;" data-navto="categories">' + ic('shopping-basket') + ' 分类管理</button></div></div>';
 
     /* 菜单组 */
@@ -754,6 +760,8 @@
           toast('帮助中心即将上线');
         } else if (act === 'invite') {
           toast('已生成邀请链接（演示）');
+        } else if (act === 'storeSettings') {
+          openStoreSettings();
         } else if (act === 'switchInd') {
           confirm({
             title: '切换行业',
@@ -767,6 +775,48 @@
         }
       });
     });
+  }
+
+  /* 店铺设置弹层：修改门店名 / 月预算 / 预算提醒开关 */
+  function openStoreSettings() {
+    showMask();
+    var cur = DB.store.budget || 0;
+    dom.dialog.querySelector('.c-dialog__title').textContent = '店铺设置';
+    dom.dialog.querySelector('.js-dialog-ok').textContent = '保存';
+    dom.dialog.querySelector('.js-dialog-cancel').style.display = '';
+    dom.dialog.querySelector('.js-dialog-cancel').onclick = function () { hideDialog(); };
+    dom.dialog.querySelector('.c-dialog__desc').innerHTML =
+      '<div style="text-align:left;padding:2px 0 6px;">' +
+      '<div class="c-field" style="margin-bottom:12px;"><div class="c-field__label">门店名称</div>' +
+      '<input class="c-input" id="setName" value="' + esc(DB.store.name) + '" maxlength="20"></div>' +
+      '<div class="c-field" style="margin-bottom:12px;"><div class="c-field__label">月成本预算（元）</div>' +
+      '<input class="c-input c-input-phone" id="setBudget" inputmode="numeric" value="' + (cur || '') + '" placeholder="如：80000"></div>' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 2px;border-top:1px solid var(--c-line);">' +
+      '<div><div style="font-size:13px;font-weight:600;">预算超支提醒</div><div style="font-size:11px;color:var(--c-ink-3);">成本率超 75% 时推送预警</div></div>' +
+      '<div class="c-switch is-on" id="setBudgetAlert"></div></div></div>';
+    dom.dialog.classList.add('is-show');
+
+    var ok = dom.dialog.querySelector('.js-dialog-ok');
+    ok.onclick = function () {
+      var name = $('#setName').value.trim();
+      var budget = $('#setBudget').value.replace(/[^\d]/g, '');
+      if (!name) { toast('请输入门店名称'); return; }
+      if (budget && Number(budget) <= 0) { toast('请输入正确的预算金额'); return; }
+      DB.store.name = name;
+      if (budget) DB.store.budget = Number(budget);
+      if (window.Onboarding) {
+        var ob = Onboarding.read();
+        if (ob) {
+          ob.storeName = name;
+          if (budget) ob.budget = Number(budget);
+          Onboarding.save(ob);
+          Onboarding.apply(ob);
+        }
+      }
+      hideDialog();
+      toast('店铺设置已保存');
+      reloadTab('mine');
+    };
   }
 
   /* ============================================================
