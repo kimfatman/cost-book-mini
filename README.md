@@ -69,6 +69,7 @@ cost-book-mini/
 | [docs/04-api-contract.md](docs/04-api-contract.md) | 16 个接口的 HTTP 契约与接后端指引 |
 | [docs/05-development-guide.md](docs/05-development-guide.md) | 二次开发指南：新增页面/数据/功能的完整步骤 |
 | [docs/06-maintenance.md](docs/06-maintenance.md) | 维护手册：常见问题、兼容性、上线检查清单 |
+| [docs/07-wechat-cloud-guide.md](docs/07-wechat-cloud-guide.md) | 微信云开发接入改造方案（登录/16 接口逐函数对照/行业引导/定时报表） |
 
 ## 版本
 
