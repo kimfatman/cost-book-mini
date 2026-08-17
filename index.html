@@ -32,6 +32,12 @@
 
     <!-- 屏幕槽 -->
     <div class="screens" id="screens">
+      <!-- ====== 登录注册 ====== -->
+      <section class="screen" data-screen="login" data-title="登录"></section>
+
+      <!-- ====== 行业引导向导 ====== -->
+      <section class="screen" data-screen="onboarding" data-title="行业引导"></section>
+
       <!-- ====== Tab 屏：工作台 ====== -->
       <section class="screen is-tab is-active" data-screen="home" data-title="工作台">
         <div id="homeKpi"></div>
@@ -116,6 +122,8 @@
 <script src="app.js"></script>
 <!-- 子页逻辑：记一笔 / 菜品成本 / 报表 / 供应商 / 分类 -->
 <script src="subpages.js"></script>
+<!-- 登录注册 + 行业引导向导 -->
+<script src="onboarding.js"></script>
 <!-- 挂载启动 -->
 <script>
   (function () {

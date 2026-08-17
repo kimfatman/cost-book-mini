@@ -200,5 +200,79 @@ window.DB = {
     { kind: 'pending', title: '3 笔单据待核算', desc: '含 7/12 人力工资 ¥7,200', meta: '前往记账' },
     { kind: 'over', title: '食材采购超预算 12.6%', desc: '较月度预算多 ¥6,860', meta: '查看分析' },
     { kind: 'wave', title: '7 月成本率波动提醒', desc: '成本率 60.0%，环比 +1.8pp', meta: '查看趋势' }
-  ]
+  ],
+  // 行业引导模板：注册引导时按所选行业初始化成本分类
+  industryTemplates: {
+    canteen: {
+      id: 'canteen', name: '餐饮', desc: '餐厅 / 小吃 / 饮品店', icon: 'utensils',
+      categories: [
+        { id: 't1', name: '食材采购', color: '#0D7261' },
+        { id: 't2', name: '人力工资', color: '#3E6FA8' },
+        { id: 't3', name: '房租水电', color: '#B97A12' },
+        { id: 't4', name: '营销推广', color: '#8A5FA8' },
+        { id: 't5', name: '物流仓储', color: '#C24A38' },
+        { id: 't6', name: '设备折旧', color: '#5B7C6B' },
+        { id: 't7', name: '其他', color: '#9B978D' }
+      ]
+    },
+    retail: {
+      id: 'retail', name: '零售', desc: '超市 / 便利店 / 服装店', icon: 'store',
+      categories: [
+        { id: 't1', name: '商品采购', color: '#0D7261' },
+        { id: 't2', name: '人力工资', color: '#3E6FA8' },
+        { id: 't3', name: '房租水电', color: '#B97A12' },
+        { id: 't4', name: '营销推广', color: '#8A5FA8' },
+        { id: 't5', name: '物流配送', color: '#5B7C6B' },
+        { id: 't6', name: '损耗报损', color: '#C24A38' },
+        { id: 't7', name: '其他', color: '#9B978D' }
+      ]
+    },
+    fresh: {
+      id: 'fresh', name: '生鲜果蔬', desc: '菜场 / 水果店 / 水产', icon: 'shopping-basket',
+      categories: [
+        { id: 't1', name: '进货采购', color: '#0D7261' },
+        { id: 't2', name: '损耗报损', color: '#C24A38' },
+        { id: 't3', name: '摊位租金', color: '#B97A12' },
+        { id: 't4', name: '水电杂费', color: '#3E6FA8' },
+        { id: 't5', name: '人力工资', color: '#8A5FA8' },
+        { id: 't6', name: '物流运费', color: '#5B7C6B' },
+        { id: 't7', name: '其他', color: '#9B978D' }
+      ]
+    },
+    beauty: {
+      id: 'beauty', name: '美容美发', desc: '理发 / 美甲 / 护肤', icon: 'scissors',
+      categories: [
+        { id: 't1', name: '产品耗材', color: '#0D7261' },
+        { id: 't2', name: '人力工资', color: '#3E6FA8' },
+        { id: 't3', name: '房租水电', color: '#B97A12' },
+        { id: 't4', name: '营销推广', color: '#8A5FA8' },
+        { id: 't5', name: '设备折旧', color: '#5B7C6B' },
+        { id: 't6', name: '耗品杂项', color: '#C24A38' },
+        { id: 't7', name: '其他', color: '#9B978D' }
+      ]
+    },
+    factory: {
+      id: 'factory', name: '小型制造', desc: '加工 / 作坊 / 工厂', icon: 'factory',
+      categories: [
+        { id: 't1', name: '原材料', color: '#0D7261' },
+        { id: 't2', name: '人力工资', color: '#3E6FA8' },
+        { id: 't3', name: '厂房水电', color: '#B97A12' },
+        { id: 't4', name: '设备维护', color: '#5B7C6B' },
+        { id: 't5', name: '物流运输', color: '#C24A38' },
+        { id: 't6', name: '营销推广', color: '#8A5FA8' },
+        { id: 't7', name: '其他', color: '#9B978D' }
+      ]
+    },
+    service: {
+      id: 'service', name: '其他服务', desc: '培训 / 维修 / 家政', icon: 'sparkles',
+      categories: [
+        { id: 't1', name: '人力工资', color: '#3E6FA8' },
+        { id: 't2', name: '房租水电', color: '#B97A12' },
+        { id: 't3', name: '营销推广', color: '#8A5FA8' },
+        { id: 't4', name: '办公耗材', color: '#0D7261' },
+        { id: 't5', name: '差旅费用', color: '#5B7C6B' },
+        { id: 't6', name: '其他', color: '#9B978D' }
+      ]
+    }
+  }
 };

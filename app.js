@@ -742,6 +742,11 @@
     go: go,
     back: back,
     showTab: showTab,
+    // 重置页面栈到指定 Tab（登录/引导完成等场景）
+    resetTo: function (tab) {
+      stack.length = 0;
+      showTab(tab);
+    },
     openForm: openForm,
     register: function (m) { registry[m.id] = m; },
     registry: registry,
@@ -794,8 +799,17 @@
     App.register({ id: 'analysis', mount: mountAnalysis, demount: function () { } });
     App.register({ id: 'mine', mount: mountMine, demount: function () { } });
 
-    stack.push('home');
-    setScreen('home');
-    mountModule('home');
+    /* 启动：未完成行业引导 → 先登录再引导；已完成 → 应用行业配置直接进工作台 */
+    var ob = window.Onboarding && Onboarding.read ? Onboarding.read() : null;
+    if (ob) {
+      Onboarding.apply(ob);
+      stack.push('home');
+      setScreen('home');
+      mountModule('home');
+    } else {
+      stack.push('login');
+      setScreen('login');
+      mountModule('login');
+    }
   };
 })();
